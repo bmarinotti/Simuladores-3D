@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0e16">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Simuladores 3D">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="apple-touch-icon" href="../icones/apple-touch-icon.png">
+  <link rel="icon" href="../icones/favicon-32.png" sizes="32x32">
+  <title>Lavanderia Self-Service · Simuladores 3D</title>
+  <link rel="stylesheet" href="../comum/estilo.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../vendor/three.module.js",
+      "three/addons/": "../vendor/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="rodape">
+    Arraste para girar a sala · roda do mouse aproxima · a luz de cada maquina mostra o estado
+  </div>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => {});
+      });
+    }
+  </script>
+<script type="module" src="./lavanderia.js"></script>
+</body>
+</html>

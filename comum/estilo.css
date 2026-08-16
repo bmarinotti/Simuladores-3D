@@ -1,0 +1,391 @@
+/* estilo.css — HUD sobreposto ao canvas WebGL. Compartilhado pelos tres simuladores. */
+
+:root {
+  --tinta: #eef2f8;
+  --tinta-fraca: #9aa6ba;
+  --vidro: rgba(16, 20, 30, 0.82);
+  --vidro-claro: rgba(255, 255, 255, 0.06);
+  --linha: rgba(255, 255, 255, 0.10);
+  --ok: #57c98a;
+  --alerta: #e6b352;
+  --ruim: #e06a6a;
+  --raio: 10px;
+  --fonte: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+}
+
+:root {
+  --alerta: #e6b352;
+  --ruim: #e06a6a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0e16;
+  font-family: var(--fonte);
+  color: var(--tinta);
+  -webkit-font-smoothing: antialiased;
+}
+
+#tela3d { display: block; position: fixed; inset: 0; }
+
+/* ---------- topo ---------- */
+
+.topo {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: linear-gradient(180deg, rgba(8, 11, 18, 0.88), rgba(8, 11, 18, 0));
+  z-index: 20;
+  pointer-events: none;
+}
+
+.topo a.voltar {
+  pointer-events: auto;
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  background: var(--vidro-claro);
+  border: 1px solid var(--linha);
+  color: var(--tinta);
+  text-decoration: none;
+  font-size: 15px;
+  transition: background .15s ease;
+}
+.topo a.voltar:hover { background: rgba(255, 255, 255, 0.14); }
+
+.topo-txt { display: flex; flex-direction: column; line-height: 1.15; }
+.topo-txt b { font-size: 13.5px; letter-spacing: .2px; }
+.topo-txt span { font-size: 11px; color: var(--tinta-fraca); }
+
+.topo-relogio {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--tinta);
+  background: var(--vidro);
+  border: 1px solid var(--linha);
+  padding: 5px 10px;
+  border-radius: 8px;
+  pointer-events: auto;
+}
+
+/* ---------- paineis ---------- */
+
+.painel {
+  position: fixed;
+  top: 56px;
+  bottom: 14px;
+  background: var(--vidro);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.painel-esq { left: 14px; }
+.painel-dir { right: 14px; }
+
+.painel-cab {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--linha);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+.painel-cab.clicavel { cursor: pointer; user-select: none; }
+.painel-titulo { font-size: 12px; font-weight: 650; letter-spacing: .4px; text-transform: uppercase; }
+.painel-sub { font-size: 10.5px; color: var(--tinta-fraca); }
+
+.painel-corpo {
+  padding: 10px 12px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.painel-corpo::-webkit-scrollbar { width: 8px; }
+.painel-corpo::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 8px; }
+
+.painel.recolhido { bottom: auto; }
+.painel.recolhido .painel-corpo { display: none; }
+
+/* ---------- elementos ---------- */
+
+.secao {
+  font-size: 10px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--tinta-fraca);
+  margin: 14px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--linha);
+}
+.painel-corpo > .secao:first-child { margin-top: 2px; }
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 12px;
+  padding: 3px 0;
+}
+.stat-rot { color: var(--tinta-fraca); }
+.stat-val { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.stat-val.bom { color: var(--ok); }
+.stat-val.medio { color: var(--alerta); }
+.stat-val.ruim { color: var(--ruim); }
+
+.barra-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 3px 0; }
+.barra-wrap .stat-rot { flex: none; min-width: 74px; }
+.barra {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 4px;
+  overflow: hidden;
+}
+/* preenchimento animado por scaleX (composto na GPU), nao por width */
+.barra i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--ok);
+  transition: transform .25s ease, background .25s ease;
+}
+
+.btn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 7px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--tinta);
+  background: var(--vidro-claro);
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s ease, border-color .12s ease;
+}
+.btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.13); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .38; cursor: not-allowed; }
+.btn small { color: var(--tinta-fraca); float: right; font-family: var(--mono); }
+
+.btn-primario { background: rgba(87, 201, 138, 0.16); border-color: rgba(87, 201, 138, 0.42); }
+.btn-primario:hover:not(:disabled) { background: rgba(87, 201, 138, 0.26); }
+.btn-perigo { background: rgba(224, 106, 106, 0.14); border-color: rgba(224, 106, 106, 0.38); }
+
+.grupo { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.grupo .btn-grupo { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+.grupo .btn-grupo small { float: none; margin-left: auto; }
+.grupo .btn-grupo.ativo { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.36); }
+.ponto { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+
+.deslizante { margin: 8px 0 2px; }
+.deslizante input[type="range"] {
+  width: 100%;
+  height: 4px;
+  margin-top: 4px;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  outline: none;
+}
+.deslizante input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: var(--tinta);
+  cursor: pointer;
+}
+.deslizante input[type="range"]::-moz-range-thumb {
+  width: 13px; height: 13px; border: none; border-radius: 50%;
+  background: var(--tinta); cursor: pointer;
+}
+
+.texto { font-size: 11.5px; color: var(--tinta-fraca); line-height: 1.5; margin: 6px 0; }
+.texto b { color: var(--tinta); font-weight: 600; }
+.texto kbd {
+  font-family: var(--mono); font-size: 10.5px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--linha);
+  border-radius: 4px; padding: 1px 5px;
+}
+
+.log {
+  margin-top: 6px;
+  max-height: 190px;
+  overflow-y: auto;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: var(--tinta-fraca);
+  scrollbar-width: thin;
+}
+.log-linha { padding: 1px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.045); }
+.log-linha.bom { color: var(--ok); }
+.log-linha.ruim { color: var(--ruim); }
+.log-linha.aten { color: var(--alerta); }
+
+/* ---------- aviso e modal ---------- */
+
+.aviso {
+  position: fixed;
+  left: 50%;
+  top: 72px;
+  transform: translate(-50%, -8px);
+  padding: 9px 16px;
+  background: var(--vidro);
+  border: 1px solid var(--linha);
+  border-radius: 8px;
+  font-size: 12.5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+  z-index: 30;
+}
+.aviso.visivel { opacity: 1; transform: translate(-50%, 0); }
+.aviso.ruim { border-color: rgba(224, 106, 106, 0.5); }
+.aviso.bom { border-color: rgba(87, 201, 138, 0.5); }
+
+.modal-fundo {
+  position: fixed; inset: 0;
+  background: rgba(5, 7, 12, 0.66);
+  backdrop-filter: blur(3px);
+  display: none;
+  place-items: center;
+  z-index: 40;
+}
+.modal-fundo.visivel { display: grid; }
+.modal {
+  width: min(460px, 90vw);
+  max-height: 82vh;
+  overflow-y: auto;
+  background: #131824;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.modal h2 { margin: 0 0 4px; font-size: 16px; }
+.modal h3 { margin: 16px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--tinta-fraca); }
+.modal p { font-size: 12.5px; color: var(--tinta-fraca); line-height: 1.55; margin: 6px 0; }
+.modal table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 4px; }
+.modal td { padding: 4px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+.modal td:last-child { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.modal .btn { margin-top: 16px; text-align: center; }
+.modal .pos { color: var(--ok); }
+.modal .neg { color: var(--ruim); }
+
+/* ---------- dica de rodape ---------- */
+
+.rodape {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--tinta-fraca);
+  background: var(--vidro);
+  border: 1px solid var(--linha);
+  padding: 6px 12px;
+  border-radius: 8px;
+  z-index: 12;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .painel { width: 220px !important; }
+  .rodape { display: none; }
+}
+
+/* ==================================================================
+   Celular / iPhone — paineis viram "bottom sheets", alvos maiores,
+   respeito a area segura (notch e barra de gestos).
+   ================================================================== */
+@media (max-width: 760px) {
+  html, body { overscroll-behavior: none; }
+
+  .topo {
+    height: calc(46px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* --- paineis: chip recolhido lado a lado embaixo; expandido vira folha --- */
+  .painel {
+    top: auto;
+    bottom: 0;
+    width: 50% !important;
+    max-height: 68vh;
+    border-radius: 16px 16px 0 0;
+    z-index: 22;
+    transition: max-height .18s ease;
+  }
+  .painel-esq { left: 0; right: auto; border-right: 1px solid var(--linha); }
+  .painel-dir { right: 0; left: auto; border-left: 1px solid var(--linha); }
+
+  .painel.recolhido {
+    top: auto;
+    bottom: 0;
+    max-height: none;
+    z-index: 18;
+  }
+  .painel:not(.recolhido) {
+    width: 100% !important;
+    left: 0; right: 0;
+    z-index: 24;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  .painel-cab { padding: 13px 14px; }
+  .painel-cab.clicavel { -webkit-tap-highlight-color: transparent; }
+  .painel:not(.recolhido) .painel-corpo {
+    padding: 10px 16px calc(18px + env(safe-area-inset-bottom, 10px));
+    max-height: calc(68vh - 52px);
+  }
+  .painel.recolhido .painel-corpo { display: none; }
+
+  /* alvos de toque no padrao de 44px da Apple HIG */
+  .btn { padding: 13px 14px; font-size: 14px; min-height: 44px; }
+  .grupo .btn-grupo { min-height: 44px; padding: 12px 12px; }
+  .stat { padding: 7px 0; font-size: 13.5px; }
+  .barra-wrap { padding: 7px 0; }
+  .barra { height: 9px; }
+  .stat-val { font-size: 13px; }
+
+  .deslizante { margin: 12px 0 6px; }
+  .deslizante input[type="range"] { height: 8px; touch-action: pan-y; }
+  .deslizante input[type="range"]::-webkit-slider-thumb { width: 26px; height: 26px; }
+  .deslizante input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; }
+
+  .texto { font-size: 12.5px; }
+  .log { max-height: 140px; font-size: 11px; }
+
+  .btn, .btn-grupo, a.voltar { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+  .modal { width: min(460px, 92vw); padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .modal .btn { min-height: 46px; }
+
+  .aviso { top: calc(60px + env(safe-area-inset-top, 0px)); max-width: 88vw; white-space: normal; text-align: center; }
+}

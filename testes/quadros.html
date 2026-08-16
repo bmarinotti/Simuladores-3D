@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Harness de quadros</title>
+  <link rel="stylesheet" href="../comum/estilo.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../vendor/three.module.js",
+      "three/addons/": "../vendor/addons/"
+    }
+  }
+  </script>
+  <script>
+  // Harness de desenvolvimento: substitui o relogio e o requestAnimationFrame
+  // por versoes controlaveis, para rodar N quadros de simulacao sem depender
+  // do compositor do navegador. Uso: quadros.html?sim=cidade e window.__pump(n).
+  (function () {
+    let t = 0;
+    performance.now = () => t;
+    const fila = [];
+    window.requestAnimationFrame = (cb) => fila.push(cb);
+    window.__erros = [];
+    window.addEventListener('error', (e) => window.__erros.push(String(e.message)));
+    window.addEventListener('unhandledrejection', (e) => window.__erros.push('rejeicao: ' + e.reason));
+    window.__pump = (n = 60, dtMs = 16.7) => {
+      for (let k = 0; k < n; k++) {
+        t += dtMs;
+        const cbs = fila.splice(0, fila.length);
+        for (const cb of cbs) {
+          try { cb(t); } catch (err) { window.__erros.push(String(err && err.stack || err)); return k; }
+        }
+      }
+      return n;
+    };
+  })();
+  </script>
+</head>
+<body>
+  <script type="module">
+    const sim = new URLSearchParams(location.search).get('sim') || 'cidade';
+    const mapa = {
+      cidade: '../cidade/cidade.js',
+      lavanderia: '../lavanderia/lavanderia.js',
+      foodtruck: '../foodtruck/foodtruck.js',
+    };
+    try {
+      await import(mapa[sim]);
+      window.__carregado = sim;
+    } catch (err) {
+      window.__erros.push('import: ' + (err && err.stack || err));
+    }
+  </script>
+</body>
+</html>

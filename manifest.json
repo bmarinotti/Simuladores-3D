@@ -1,0 +1,16 @@
+{
+  "name": "Simuladores 3D",
+  "short_name": "Simuladores 3D",
+  "description": "Cidade, lavanderia self-service e food truck — tres simuladores de negocio em WebGL.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0e16",
+  "theme_color": "#0a0e16",
+  "icons": [
+    { "src": "./icones/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icones/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icones/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
