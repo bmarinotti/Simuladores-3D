@@ -8,31 +8,68 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Simuladores 3D">
-  <link rel="manifest" href="../manifest.json">
-  <link rel="apple-touch-icon" href="../icones/apple-touch-icon.png">
-  <link rel="icon" href="../icones/favicon-32.png" sizes="32x32">
-  <title>Food Truck · Simuladores 3D</title>
-  <link rel="stylesheet" href="../comum/estilo.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "../vendor/three.module.js",
-      "three/addons/": "../vendor/addons/"
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icones/apple-touch-icon.png">
+  <link rel="icon" href="./icones/favicon-32.png" sizes="32x32">
+  <title>Simuladores 3D</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; min-height: 100%;
+      background: #0a0e16; color: #eef2f8;
+      font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
-  }
-  </script>
+    .envolt {
+      max-width: 960px; margin: 0 auto; padding: 48px 20px 64px;
+    }
+    h1 { font-size: 1.6rem; margin: 0 0 8px; }
+    .sub { color: #9aa6ba; margin: 0 0 36px; font-size: 0.95rem; }
+    .grade {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+    a.cartao {
+      display: block; text-decoration: none; color: inherit;
+      background: rgba(16, 20, 30, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 12px; padding: 22px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    a.cartao:hover { border-color: rgba(255, 255, 255, 0.28); transform: translateY(-2px); }
+    .cartao .icone { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+    .cartao h2 { font-size: 1.05rem; margin: 0 0 6px; }
+    .cartao p { font-size: 0.85rem; color: #9aa6ba; margin: 0; line-height: 1.4; }
+  </style>
 </head>
 <body>
-  <div class="rodape">
-    Escolha o ponto no painel da esquerda · arraste para girar · roda do mouse aproxima
+  <div class="envolt">
+    <h1>Simuladores 3D</h1>
+    <p class="sub">Três simulações de negócio em WebGL/three.js — escolha uma.</p>
+    <div class="grade">
+      <a class="cartao" href="./cidade/index.html">
+        <span class="icone">🏙️</span>
+        <h2>Cidade</h2>
+        <p>Zoneamento RCI, crescimento por demanda, orçamento municipal, poluição.</p>
+      </a>
+      <a class="cartao" href="./lavanderia/index.html">
+        <span class="icone">🧺</span>
+        <h2>Lavanderia self-service</h2>
+        <p>Fila, elasticidade de preço, desgaste de máquina, P&amp;L diário.</p>
+      </a>
+      <a class="cartao" href="./foodtruck/index.html">
+        <span class="icone">🚚</span>
+        <h2>Food truck</h2>
+        <p>Escolha de ponto, conversão de fluxo, gargalo de produção, estoque.</p>
+      </a>
+    </div>
   </div>
-    <script>
+  <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => {});
+        navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
       });
     }
   </script>
-<script type="module" src="./foodtruck.js"></script>
 </body>
 </html>
